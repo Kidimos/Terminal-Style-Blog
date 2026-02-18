@@ -1,0 +1,5 @@
+{
+  "name": "BitStream Terminal Blog",
+  "description": "A fully interactive terminal-themed blog powered by Gemini AI, featuring command-line navigation and real-time AI assistance.",
+  "requestFramePermissions": []
+}
