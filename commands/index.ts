@@ -1,6 +1,7 @@
 import { TerminalLine, Theme } from '../types';
-import { BLOG_POSTS } from '../constants';
 import { BLOG_CONFIG } from '../config';
+import { BLOG_POSTS } from '@/services/postService';
+import React from 'react';
 
 // 命令上下文：包含所有命令可能需要的依赖
 export interface CommandContext {
@@ -14,7 +15,7 @@ export interface CommandContext {
     theme: Theme;                                    // 当前主题值
     themeEnum: typeof Theme;
     clearHistory: () => void;
-    helpText: string;
+    helpText: React.ReactNode;
 }
 
 // 命令函数类型

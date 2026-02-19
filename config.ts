@@ -1,3 +1,4 @@
+import { CATEGORIES } from "./services/postService";
 
 export const BLOG_CONFIG = {
     name: "KIDIMOS",
@@ -16,7 +17,7 @@ export const BLOG_CONFIG = {
     bio: "欢迎来到我的终端式博客!",
     prompt: "user@kidimos",
     location: "Hong Kong / China",
-    categories: ["Code", "Anime", "Game"],
+    categories: CATEGORIES,
     defaultTheme: "matrix",
     systemStatus: {
         cpu: "QUANTUM-X12",

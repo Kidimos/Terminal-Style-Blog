@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { TerminalLine, Theme } from '../types';
-import { BLOG_POSTS, HELP_TEXT, WELCOME_MESSAGE } from '../constants';
+import { BLOG_POSTS, fetchPostContent } from '@/services/postService';
+import { HELP_TEXT, WELCOME_MESSAGE } from '../constants'; // 从 constants 导入
 import { BLOG_CONFIG } from '../config';
 import * as commandFns from '../commands';  // 导入所有命令（除了 clear）
 import { CommandContext } from '../commands';
@@ -32,17 +33,6 @@ export function useTerminal(theme: Theme, setTheme: (theme: Theme) => void) {
     const clearHistory = useCallback(() => {
         setHistory([]);
     }, []);
-
-    // 获取文章内容
-    const fetchPostContent = async (slug: string): Promise<string> => {
-        try {
-            const response = await fetch(`./post/${slug}.md`);
-            if (!response.ok) throw new Error("File not found");
-            return await response.text();
-        } catch (e) {
-            return "ERROR: Unable to retrieve source file from secure storage.";
-        }
-    };
 
     // 执行命令的函数，用于在 JSX 点击中调用（如 ls 中点击分类或文章）
     const executeCommand = useCallback((cmd: string) => {

@@ -1,106 +1,34 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KIDIMOS Terminal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <!-- Google Fonts (保留) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            scroll-behavior: smooth;
-            --md-heading: currentColor;
-            --md-text: rgba(255,255,255,0.85);
-            --md-code-bg: rgba(0,0,0,0.5);
-            --md-border: rgba(255,255,255,0.1);
+    <!-- 合并后的样式 -->
+    <link rel="stylesheet" href="/index.css">
+    <!-- 如果还需要 Tailwind CDN，保留下一行；否则删除 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 可选：如果继续使用 CDN 依赖，保留 import map；否则删除 -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@^19.2.3",
+            "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+            "react/": "https://esm.sh/react@^19.2.3/",
+            "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+            "react-markdown": "https://esm.sh/react-markdown@^9.0.1",
+            "remark-gfm": "https://esm.sh/remark-gfm@^4.0.0"
         }
-        
-        /* Theme Overrides for Article Content */
-        .theme-matrix { --md-heading: #22c55e; --md-text: #bbf7d0; --md-border: #166534; }
-        .theme-amber { --md-heading: #f59e0b; --md-text: #fef3c7; --md-border: #92400e; }
-        .theme-modern { --md-heading: #22d3ee; --md-text: #cffafe; --md-border: #155e75; }
-        .theme-cyberpunk { --md-heading: #d946ef; --md-text: #fae8ff; --md-border: #86198f; }
-
-        body {
-            margin: 0;
-            background-color: #060606;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-        }
-        ::selection {
-            background: rgba(var(--current-rgb, 34, 197, 94), 0.4);
-            color: #fff;
-        }
-        .crt::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-            z-index: 50;
-            background-size: 100% 2px, 3px 100%;
-            pointer-events: none;
-        }
-        .terminal-scroll-area {
-            scrollbar-gutter: stable;
-            -webkit-overflow-scrolling: touch;
-            scroll-behavior: smooth;
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(100, 100, 100, 0.3);
-            border-radius: 10px;
-        }
-        .line-slide-in {
-            animation: slideIn 0.2s cubic-bezier(0, 0, 0.2, 1) forwards;
-            opacity: 0;
-            transform: translateY(4px);
-        }
-        @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
-        .cursor-blink { animation: blink 1s step-end infinite; }
-        @keyframes blink { from, to { opacity: 1; } 50% { opacity: 0; } }
-
-        /* Enhanced Markdown Styling */
-        .markdown-content {
-            color: var(--md-text);
-            line-height: 1.8;
-            font-size: 1.05rem;
-        }
-        .markdown-content h1 { font-size: 2.25rem; font-weight: 900; color: var(--md-heading); border-bottom: 2px solid var(--md-border); margin: 2rem 0 1.5rem; padding-bottom: 0.75rem; text-transform: uppercase; letter-spacing: -0.02em; }
-        .markdown-content h2 { font-size: 1.75rem; font-weight: 800; color: var(--md-heading); margin: 1.5rem 0 1rem; opacity: 0.9; }
-        .markdown-content h3 { font-size: 1.25rem; font-weight: 700; color: var(--md-heading); margin: 1.25rem 0 0.75rem; }
-        .markdown-content p { margin: 1rem 0; }
-        .markdown-content code { background: var(--md-code-bg); color: var(--md-heading); padding: 0.2rem 0.4rem; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 0.9em; border: 1px solid var(--md-border); }
-        .markdown-content pre { background: rgba(0, 0, 0, 0.4); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--md-border); overflow-x: auto; margin: 1.5rem 0; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .markdown-content pre code { background: transparent; border: none; padding: 0; color: inherit; }
-        .markdown-content ul { list-style-type: none; padding-left: 0; margin: 1rem 0; }
-        .markdown-content li { position: relative; padding-left: 1.5rem; margin-bottom: 0.5rem; }
-        .markdown-content li::before { content: ">"; position: absolute; left: 0; color: var(--md-heading); font-weight: bold; }
-        .markdown-content blockquote { border-left: 4px solid var(--md-heading); padding: 1rem 1.5rem; background: rgba(var(--current-rgb), 0.05); font-style: italic; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
-        .markdown-content strong { color: var(--md-heading); font-weight: 800; }
-    </style>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
-    "react-markdown": "https://esm.sh/react-markdown@^9.0.1",
-    "remark-gfm": "https://esm.sh/remark-gfm@^4.0.0"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
+    }
+    </script>
 </head>
 <body class="crt">
     <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+    <script type="module" src="/index.tsx"></script>
 </body>
 </html>
