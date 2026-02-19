@@ -1,7 +1,7 @@
 import frontMatter from 'front-matter';
 
 // 使用 Vite 的 glob 导入，在构建时同步加载所有 .md 文件
-const modules = import.meta.glob('../post/*.md', { eager: true, query: '?raw', import: 'default' });
+const modules = import.meta.glob('../public/post/*.md', { eager: true, query: '?raw', import: 'default' });
 
 export interface PostMeta {
     slug: string;          // 文件名（不含扩展名）

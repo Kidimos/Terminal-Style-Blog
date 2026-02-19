@@ -6,7 +6,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # 定义模板文件和目标目录
 TEMPLATE="$PROJECT_ROOT/scaffolds/post.md"
-POSTS_DIR="$PROJECT_ROOT/post"
+POSTS_DIR="$PROJECT_ROOT/public/post"
 
 # 如果模板不存在，则创建一个默认模板
 if [ ! -f "$TEMPLATE" ]; then
