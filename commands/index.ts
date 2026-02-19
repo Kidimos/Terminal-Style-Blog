@@ -29,3 +29,5 @@ export { lsCommand } from './ls';
 export { treeCommand } from './tree';
 export { catCommand } from './cat';
 export { whoamiCommand } from './whoami';
+export { searchCommand } from './search';
+export { tagsCommand } from './tags';

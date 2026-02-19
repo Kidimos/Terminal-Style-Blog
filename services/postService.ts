@@ -69,11 +69,44 @@ export function getPostBySlug(slug: string): PostMeta | undefined {
 
 // 运行时获取文章完整内容
 export async function fetchPostContent(slug: string): Promise<string> {
-    try {
-        const response = await fetch(`./post/${slug}.md`);
-        if (!response.ok) throw new Error("File not found");
-        return await response.text();
-    } catch (e) {
-        return "ERROR: Unable to retrieve source file from secure storage.";
-    }
+  try {
+    const response = await fetch(`./post/${slug}.md`);
+    if (!response.ok) throw new Error("File not found");
+    return await response.text();
+  } catch (e) {
+    return "ERROR: Unable to retrieve source file from secure storage.";
+  }
+}
+
+export function getPostsByTag(tag: string): PostMeta[] {
+  return posts.filter(p => p.tags?.includes(tag));
+}
+
+export function getTagStats(): Record<string, number> {
+  const stats: Record<string, number> = {};
+  posts.forEach(p => {
+    (p.tags || []).forEach(tag => {
+      stats[tag] = (stats[tag] || 0) + 1;
+    });
+  });
+  return stats;
+}
+
+export function getAllTagsWithCount(): Array<{ tag: string; count: number }> {
+  const stats = getTagStats();
+  return Object.entries(stats)
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+export function getCategoryStats(): Record<string, number> {
+  const stats: Record<string, number> = {};
+  posts.forEach(p => {
+    stats[p.category] = (stats[p.category] || 0) + 1;
+  });
+  return stats;
+}
+
+export function getTotalPosts(): number {
+  return posts.length;
 }

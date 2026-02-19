@@ -1,0 +1,81 @@
+default:
+  id: default
+  name: "默认布局"
+  description: "左侧边栏标准布局"
+  structure:
+    type: flex-row
+    direction: ltr
+    sidebar:
+      position: left
+      width: 480
+  components:
+    sidebar:
+      visible: true
+      order: 1
+    main:
+      order: 2
+    header:
+      visible: true
+    terminal:
+      visible: true
+
+sidebar-right:
+  id: sidebar-right
+  name: "侧边栏居右"
+  description: "右侧边栏布局"
+  structure:
+    type: flex-row
+    direction: rtl
+    sidebar:
+      position: right
+      width: 480
+  components:
+    sidebar:
+      visible: true
+      order: 2
+    main:
+      order: 1
+    header:
+      visible: true
+    terminal:
+      visible: true
+
+no-sidebar:
+  id: no-sidebar
+  name: "无侧边栏"
+  description: "全宽终端布局"
+  structure:
+    type: flex-col
+  components:
+    sidebar:
+      visible: false
+    main:
+      order: 1
+    header:
+      visible: true
+    terminal:
+      visible: true
+
+compact:
+  id: compact
+  name: "紧凑模式"
+  description: "窄侧边栏紧凑布局"
+  extends: default
+  structure:
+    sidebar:
+      width: 320
+  overrides:
+    sidebar:
+      sections:
+        - logo
+        - profile
+        - catalog
+
+minimal:
+  id: minimal
+  name: "极简模式"
+  description: "仅终端无头部"
+  extends: no-sidebar
+  overrides:
+    header:
+      visible: false

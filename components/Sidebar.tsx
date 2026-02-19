@@ -1,80 +1,163 @@
 import React from 'react';
-import { BLOG_CONFIG } from '../config';
-import { Theme } from '../types';
+import { useConfig, useLayoutConfig } from '../hooks/useConfig';
+import { useStyles } from '../hooks/useStyles';
+import { CATEGORIES, getAllTagsWithCount, getCategoryStats, getTotalPosts } from '../services/postService';
+import SidebarCollapsible from './SidebarCollapsible';
+import type { SidebarSection as SidebarSectionType, Theme } from '../types/config';
 
-interface SidebarProps {
-    currentTime: Date;
-    theme: Theme;
-    onCategoryClick: (category: string) => void;
+interface SidebarSectionProps {
+  type: SidebarSectionType;
+  currentTime: Date;
+  onCategoryClick: (category: string) => void;
+  onTagClick: (tag: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentTime, theme, onCategoryClick }) => {
-    return (
-        <aside className="hidden lg:flex w-[480px] border-r border-current/10 flex-col p-10 space-y-12 select-none z-30 bg-black/50 backdrop-blur-xl overflow-y-auto custom-scrollbar">
-            {/* 原有 aside 内的所有内容原样复制过来，注意替换 props 使用的地方 */}
-            <div className="space-y-4">
-                <pre className="text-[6px] xl:text-[9px] leading-[1.1] text-current font-black opacity-100 mb-6">
-                    {BLOG_CONFIG.asciiLogo}
-                </pre>
+const SidebarSection: React.FC<SidebarSectionProps> = ({ type, currentTime, onCategoryClick, onTagClick }) => {
+  const config = useConfig();
+  const { get } = useStyles();
+
+  switch (type) {
+    case 'logo':
+      return (
+        <div className={get('sidebar.logo.wrapper')}>
+          <pre className={get('sidebar.logo.text')}>{config.site.asciiLogo}</pre>
+        </div>
+      );
+
+    case 'profile':
+      return (
+        <div className={get('sidebar.profile.wrapper')}>
+          <img
+            src={config.site.avatarUrl}
+            alt={config.site.author}
+            className={get('sidebar.profile.avatar')}
+          />
+          <div className="flex-1 min-w-0">
+            <p className={get('sidebar.profile.name')}>{config.site.author}</p>
+            <p className={get('sidebar.profile.title')}>{config.site.title}</p>
+            <p className={get('sidebar.profile.bio')}>"{config.site.bio}"</p>
+          </div>
+        </div>
+      );
+
+    case 'clock':
+      return (
+        <SidebarCollapsible title="Master Clock" storageKey="clock" defaultOpen={true}>
+          <p className={get('sidebar.clock.time')}>
+            {currentTime.toLocaleTimeString([], { hour12: false })}
+          </p>
+          <p className={get('sidebar.clock.date')}>{currentTime.toDateString().toUpperCase()}</p>
+        </SidebarCollapsible>
+      );
+
+    case 'catalog':
+      return (
+        <SidebarCollapsible title="Catalog // 目录" storageKey="catalog" defaultOpen={true}>
+          <div className={get('sidebar.catalog.grid')}>
+            {CATEGORIES.map((cat) => (
+              <div
+                key={cat}
+                className={get('sidebar.catalog.item')}
+                onClick={() => onCategoryClick(cat)}
+              >
+                <span className={get('sidebar.catalog.bullet')}>▸</span>
+                <span className={get('sidebar.catalog.text')}>{cat}</span>
+              </div>
+            ))}
+          </div>
+          <div className={get('sidebar.catalog.location')}>
+            <span className={get('sidebar.catalog.statusDot')}>●</span>
+            <span className={get('sidebar.catalog.locationText')}>{config.site.location}</span>
+          </div>
+        </SidebarCollapsible>
+      );
+
+    case 'tags':
+      const tagsWithCount = getAllTagsWithCount();
+      if (tagsWithCount.length === 0) return null;
+      return (
+        <SidebarCollapsible title="Tags // 标签" storageKey="tags" defaultOpen={true}>
+          <div className={get('sidebar.tags.cloud')}>
+            {tagsWithCount.slice(0, 12).map(({ tag, count }) => (
+              <span
+                key={tag}
+                className={get('sidebar.tags.tag')}
+                onClick={() => onTagClick(tag)}
+              >
+                {tag}
+                <span className={get('sidebar.tags.count')}>({count})</span>
+              </span>
+            ))}
+          </div>
+        </SidebarCollapsible>
+      );
+
+    case 'statistics':
+      const categoryStats = getCategoryStats();
+      const totalPosts = getTotalPosts();
+      return (
+        <SidebarCollapsible title="Statistics // 统计" storageKey="statistics" defaultOpen={false}>
+          <div className={get('sidebar.statistics.content')}>
+            {Object.entries(categoryStats).map(([cat, count]) => (
+              <div key={cat} className={get('sidebar.statistics.categoryRow')}>
+                <span>{cat}</span>
+                <span>{count}</span>
+              </div>
+            ))}
+            <div className={get('sidebar.statistics.totalRow')}>
+              <span>TOTAL</span>
+              <span>{totalPosts} posts</span>
             </div>
+          </div>
+        </SidebarCollapsible>
+      );
 
-            <div className="flex items-center gap-6 p-4 border border-current/20 bg-current/5 rounded-sm">
-                <img
-                    src={BLOG_CONFIG.avatarUrl}
-                    alt={BLOG_CONFIG.author}
-                    className="w-20 h-20 object-cover border border-current opacity-80 flex-shrink-0 shadow-[0_0_15px_rgba(var(--current-rgb),0.3)] grayscale hover:grayscale-0 transition-all duration-300"
-                />
-                <div className="flex-1 min-w-0">
-                    <p className="text-xl font-black truncate">{BLOG_CONFIG.author}</p>
-                    <p className="text-[10px] opacity-60 font-bold uppercase tracking-widest truncate">{BLOG_CONFIG.title}</p>
-                    <p className="text-[9px] opacity-40 mt-1 line-clamp-2 leading-tight italic">"{BLOG_CONFIG.bio}"</p>
-                </div>
-            </div>
+    case 'footer':
+      return (
+        <div className={get('sidebar.footer.wrapper')}>
+          <p>&copy; {new Date().getFullYear()} {config.site.name}_SYSTEMS</p>
+          <p>AUTHORIZED_OPERATOR_ONLY</p>
+        </div>
+      );
 
-            <div className="space-y-12 flex-1">
-                <div className="space-y-3">
-                    <p className="text-sm opacity-40 uppercase font-black tracking-widest border-b-2 border-current/10 pb-1">Master Clock</p>
-                    <p className="text-6xl font-black tracking-tighter leading-none">{currentTime.toLocaleTimeString([], { hour12: false })}</p>
-                    <p className="text-lg font-bold opacity-60 tracking-widest mt-1">{currentTime.toDateString().toUpperCase()}</p>
-                </div>
+    default:
+      return null;
+  }
+};
 
-                <div className="space-y-3">
-                    <p className="text-sm opacity-40 uppercase font-black tracking-widest border-b-2 border-current/10 pb-1">Catalog // 目录</p>
-                    <div className="grid grid-cols-2 gap-y-3 pt-2">
-                        {BLOG_CONFIG.categories.map(cat => (
-                            <div key={cat} className="flex items-center gap-2 group cursor-pointer hover:text-white transition-colors" onClick={() => onCategoryClick(cat)}>
-                                <span className="text-xs opacity-40 group-hover:opacity-100 group-hover:animate-pulse">▸</span>
-                                <span className="text-base font-black underline uppercase tracking-tighter">{cat}</span>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] font-black mt-6 pt-4 border-t border-current/5">
-                        <span className="text-green-500 animate-pulse text-lg">●</span>
-                        <span className="tracking-widest opacity-60 uppercase">{BLOG_CONFIG.location}</span>
-                    </div>
-                </div>
+interface SidebarProps {
+  currentTime: Date;
+  theme: Theme;
+  onCategoryClick: (category: string) => void;
+  onTagClick: (tag: string) => void;
+  isCollapsed?: boolean;
+}
 
-                <div className="space-y-6">
-                    <p className="text-sm opacity-40 uppercase font-black tracking-widest border-b-2 border-current/10 pb-1">Kernel Analytics</p>
-                    <div className="space-y-6 pt-2">
-                        <div>
-                            <div className="flex justify-between text-xs mb-2 font-black tracking-widest"><span>CPU_LOAD</span><span>52.4%</span></div>
-                            <div className="w-full bg-current/10 h-2.5 rounded-full overflow-hidden"><div className="bg-current h-full w-[52%] animate-[width_2s_ease-out]"></div></div>
-                        </div>
-                        <div>
-                            <div className="flex justify-between text-xs mb-2 font-black tracking-widest"><span>NEURAL_BUS</span><span>{BLOG_CONFIG.systemStatus.ram}</span></div>
-                            <div className="w-full bg-current/10 h-2.5 rounded-full overflow-hidden"><div className="bg-current h-full w-[24%] animate-[width_2s_ease-out]"></div></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+const Sidebar: React.FC<SidebarProps> = ({ currentTime, onCategoryClick, onTagClick, isCollapsed = false }) => {
+  const config = useConfig();
+  const layoutConfig = useLayoutConfig(config.layout.preset);
+  const { get } = useStyles();
 
-            <div className="pt-10 border-t-2 border-current/10 text-[11px] opacity-40 font-black space-y-2 uppercase tracking-widest">
-                <p>&copy; {new Date().getFullYear()} {BLOG_CONFIG.name}_SYSTEMS</p>
-                <p>AUTHORIZED_OPERATOR_ONLY</p>
-            </div>
-        </aside>
-    );
+  if (!layoutConfig.sidebarVisible) {
+    return null;
+  }
+
+  return (
+    <aside
+      className={`${get('sidebar.root')} ${isCollapsed ? get('sidebar.rootCollapsed') : ''}`}
+      style={{ width: isCollapsed ? 0 : layoutConfig.sidebarWidth }}
+    >
+      {layoutConfig.sidebarSections.map((section) => (
+        <SidebarSection
+          key={section}
+          type={section}
+          currentTime={currentTime}
+          onCategoryClick={onCategoryClick}
+          onTagClick={onTagClick}
+        />
+      ))}
+    </aside>
+  );
 };
 
 export default Sidebar;

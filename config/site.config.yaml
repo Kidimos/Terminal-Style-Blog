@@ -1,0 +1,81 @@
+site:
+  name: "KIDIMOS"
+  author: "KIDIMOS"
+  title: "kidimosctl@gmail.com"
+  bio: "欢迎来到我的终端式博客!"
+  prompt: "user@kidimos"
+  version: "4.0.0-PRO"
+  asciiLogo: |
+    ██╗  ██╗██╗██████╗ ██╗███╗   ███╗ ██████╗ ███████╗
+    ██║ ██╔╝██║██╔══██╗██║████╗ ████║██╔═══██╗██╔════╝
+    █████╔╝ ██║██║  ██║██║██╔████╔██║██║   ██║███████╗
+    ██╔═██╗ ██║██║  ██║██║██║╚██╔╝██║██║   ██║╚════██║
+    ██║  ██╗██║██████╔╝██║██║ ╚═╝ ██║╚██████╔╝███████║
+    ╚═╝  ╚═╝╚═╝╚═════╝ ╚═╝╚═╝     ╚═╝ ╚═════╝ ╚══════╝
+  avatarUrl: "http://q.qlogo.cn/headimg_dl?dst_uin=865055361&spec=640&img_type=jpg"
+  location: "Hong Kong / China"
+  copyright: "{year} {name}_SYSTEMS"
+
+layout:
+  preset: "default"
+  components:
+    sidebar:
+      visible: true
+      width: 480
+      sections:
+        - logo
+        - profile
+        - clock
+        - catalog
+        - tags
+        - statistics
+        - footer
+      position: left
+    header:
+      visible: true
+      sections:
+        - brand
+        - session
+        - status
+    terminal:
+      visible: true
+      scrollBehavior: auto
+
+theme:
+  default: matrix
+  available:
+    - matrix
+    - amber
+    - modern
+    - cyberpunk
+
+features:
+  search:
+    enabled: true
+    command: "search"
+  tags:
+    enabled: true
+    command: "tags"
+  comments:
+    enabled: false
+    provider: null
+  rss:
+    enabled: false
+  statistics:
+    enabled: true
+
+systemStatus:
+  cpu: "QUANTUM-X12"
+  ram: "256GB NEURAL-LINK"
+  uptime: "100%"
+  kernel: "KDN_5.2.1-ULTRA"
+
+messages:
+  welcome: |
+    System Initialized: {version}
+    Authentication Successful: Terminal Interface v4.0.0 Ready.
+    Welcome to the archives of Node_01.
+    Enter 'help' or 'tree' to explore.
+  ready: "READY_FOR_COMMAND..."
+  loading: "ACCESSING_DATA_BANKS..."
+  error: "[System_Fault]"

@@ -1,24 +1,67 @@
 import React from 'react';
-import { BLOG_CONFIG } from '../config';
+import { useConfig } from '../hooks/useConfig';
+import { useStyles } from '../hooks/useStyles';
+import type { HeaderSection as HeaderSectionType } from '../types/config';
+
+interface HeaderSectionProps {
+  type: HeaderSectionType;
+  currentTime: Date;
+}
+
+const HeaderSection: React.FC<HeaderSectionProps> = ({ type, currentTime }) => {
+  const config = useConfig();
+  const { get } = useStyles();
+
+  switch (type) {
+    case 'brand':
+      return <span className={get('header.brand')}>{config.site.name}</span>;
+
+    case 'session':
+      return <span className={get('header.session')}>Session: TTY01</span>;
+
+    case 'status':
+      return (
+        <span className={get('header.status')}>UPLINK_ENCRYPTED</span>
+      );
+
+    default:
+      return null;
+  }
+};
 
 interface HeaderProps {
-    currentTime: Date;
+  currentTime: Date;
 }
 
 const Header: React.FC<HeaderProps> = ({ currentTime }) => {
-    return (
-        <header className="flex items-center justify-between px-10 py-5 text-xs border-b border-current/10 bg-black/60 backdrop-blur-md z-20">
-            <div className="flex gap-10 font-black uppercase tracking-[0.2em]">
-                <span className="lg:hidden text-current text-lg font-black">{BLOG_CONFIG.name}</span>
-                <span className="opacity-40">Session: TTY01</span>
-                <span className="hidden sm:inline opacity-40">Mode: Read/Write</span>
-            </div>
-            <div className="flex items-center gap-6">
-                <span className="lg:hidden font-black text-base">{currentTime.toLocaleTimeString([], { hour12: false })}</span>
-                <span className="bg-current text-black px-4 py-1.5 font-black rounded-sm shadow-[0_0_15px_rgba(var(--current-rgb),0.4)] tracking-widest">UPLINK_ENCRYPTED</span>
-            </div>
-        </header>
-    );
+  const config = useConfig();
+  const { get } = useStyles();
+
+  if (!config.layout.components.header.visible) {
+    return null;
+  }
+
+  return (
+    <header className={get('header.root')}>
+      <div className={get('header.left')}>
+        {config.layout.components.header.sections.includes('brand') && (
+          <HeaderSection type="brand" currentTime={currentTime} />
+        )}
+        {config.layout.components.header.sections.includes('session') && (
+          <HeaderSection type="session" currentTime={currentTime} />
+        )}
+        <span className={get('header.mode')}>Mode: Read/Write</span>
+      </div>
+      <div className={get('header.right')}>
+        <span className={get('header.time')}>
+          {currentTime.toLocaleTimeString([], { hour12: false })}
+        </span>
+        {config.layout.components.header.sections.includes('status') && (
+          <HeaderSection type="status" currentTime={currentTime} />
+        )}
+      </div>
+    </header>
+  );
 };
 
 export default Header;
